@@ -1,7 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -11,6 +9,8 @@ import 'package:reddit_clone/core/provider/firebase_providers.dart';
 import 'package:reddit_clone/models/user_model.dart';
 import '../../../core/failure.dart';
 import '../../../core/type_defs.dart';
+
+final userProvider = StateProvider<UserModel?>((ref) => null);
 
 final authRepositoryProvider = Provider(
   (ref) => AuthRepository(
@@ -35,6 +35,8 @@ class AuthRepository {
 
   CollectionReference get _users =>
       _firestore.collection(FirebaseConstants.usersCollection);
+
+  Stream<User?> get authStateChange => _auth.authStateChanges();
 
   FutureEither<UserModel> signInWithGoogle() async {
     try {
