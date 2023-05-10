@@ -58,5 +58,7 @@
 			</array>
 		</dict>
 	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+		<string>Upload Images</string>
 </dict>
 </plist>

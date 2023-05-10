@@ -44,6 +44,8 @@ dependencies:
   flutter_riverpod: ^2.3.4
   fpdart: ^0.5.0
   routemaster: ^1.0.1
+  dotted_border: ^2.0.0+3
+  file_picker: ^5.2.11
 
 dev_dependencies:
   flutter_test:
