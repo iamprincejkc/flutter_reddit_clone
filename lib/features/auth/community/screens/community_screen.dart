@@ -6,6 +6,8 @@ import 'package:reddit_clone/features/auth/community/controller/community_contro
 import 'package:reddit_clone/features/auth/repository/auth_repository.dart';
 import 'package:routemaster/routemaster.dart';
 
+import '../../../../models/community_model.dart';
+
 class CommunityScreen extends ConsumerWidget {
   final String name;
   const CommunityScreen({super.key, required this.name});
@@ -14,6 +16,12 @@ class CommunityScreen extends ConsumerWidget {
   void navigateToModTools(BuildContext context) {
     final encodedName = Uri.encodeComponent(name);
     Routemaster.of(context).push('/mod-tools/$encodedName');
+  }
+
+  void joinCommunity(WidgetRef ref, Community community, BuildContext context) {
+    ref
+        .read(communityControllerProvider.notifier)
+        .joinCommunity(community, context);
   }
 
   @override
@@ -76,7 +84,8 @@ class CommunityScreen extends ConsumerWidget {
                                       child: const Text('Mod Tools'),
                                     )
                                   : OutlinedButton(
-                                      onPressed: (() {}),
+                                      onPressed: () => joinCommunity(
+                                          ref, community, context),
                                       style: ElevatedButton.styleFrom(
                                         shape: RoundedRectangleBorder(
                                           borderRadius:
@@ -87,7 +96,7 @@ class CommunityScreen extends ConsumerWidget {
                                       ),
                                       child: Text(
                                           community.members.contains(user.uid)
-                                              ? 'Joined'
+                                              ? 'Leave'
                                               : 'Join'),
                                     ),
                             ],
