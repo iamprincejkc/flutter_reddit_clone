@@ -6,6 +6,7 @@ import 'package:reddit_clone/features/auth/community/controller/community_contro
 import 'package:reddit_clone/features/auth/repository/auth_repository.dart';
 import 'package:routemaster/routemaster.dart';
 
+import '../../../../core/common/post_card.dart';
 import '../../../../models/community_model.dart';
 
 class CommunityScreen extends ConsumerWidget {
@@ -111,7 +112,20 @@ class CommunityScreen extends ConsumerWidget {
                   )
                 ];
               },
-              body: Text('Displaying Posts'),
+             body: ref.watch(getCommunityPostsProvider(name)).when(
+                  data: (data) {
+                    return ListView.builder(
+                      itemBuilder: ((context, index) {
+                        final post = data[index];
+                        return PostCard(post: post);
+                      }),
+                      itemCount: data.length,
+                    );
+                  },
+                  error: (error, stackTrace) {
+                    return ErrorText(error: error.toString());
+                  },
+                  loading: (() => const Loader())),
             ),
             error: (error, stackTrace) => ErrorText(error: error.toString()),
             loading: () => const Loader(),

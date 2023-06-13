@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/features/auth/controller/auth_controller.dart';
-import 'package:reddit_clone/features/auth/repository/auth_repository.dart';
 import 'package:routemaster/routemaster.dart';
 
 import '../../../core/common/error_text.dart';
 import '../../../core/common/loader.dart';
+import '../../../core/common/post_card.dart';
+import '../controller/user_profile_controller.dart';
 
 class UserProfileScreen extends ConsumerWidget {
   final String uid;
@@ -86,7 +87,20 @@ class UserProfileScreen extends ConsumerWidget {
                   )
                 ];
               },
-              body: const Text('Displaying Posts'),
+              body: ref.watch(getUserPostsProvider(uid)).when(
+                  data: (data) {
+                    return ListView.builder(
+                      itemBuilder: ((context, index) {
+                        final post = data[index];
+                        return PostCard(post: post);
+                      }),
+                      itemCount: data.length,
+                    );
+                  },
+                  error: (error, stackTrace) {
+                    return ErrorText(error: error.toString());
+                  },
+                  loading: (() => const Loader())),
             ),
             error: (error, stackTrace) => ErrorText(error: error.toString()),
             loading: () => const Loader(),
