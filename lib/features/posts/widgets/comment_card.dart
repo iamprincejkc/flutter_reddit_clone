@@ -12,6 +12,7 @@ class CommentCard extends ConsumerWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 4),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -20,16 +21,20 @@ class CommentCard extends ConsumerWidget {
                 radius: 18,
               ),
               Expanded(
-                child: Column(
-                  children: [
-                    Text(
-                      'u/${comment.username}',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
+                child: Padding(
+                  padding: const EdgeInsets.only(left: 16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'u/${comment.username}',
+                        style: const TextStyle(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    ),
-                    Text(comment.text),
-                  ],
+                      Text(comment.text),
+                    ],
+                  ),
                 ),
               )
             ],

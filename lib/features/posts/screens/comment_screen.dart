@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/core/common/post_card.dart';
 import 'package:reddit_clone/features/posts/controller/post_controller.dart';
+import 'package:reddit_clone/features/posts/widgets/comment_card.dart';
 
 import '../../../core/common/error_text.dart';
 import '../../../core/common/loader.dart';
@@ -53,6 +54,23 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                     border: InputBorder.none,
                   ),
                 ),
+                ref.watch(getPostCommentsProvider(widget.postId)).when(
+                    data: (data) {
+                      return Expanded(
+                        child: ListView.builder(
+                          itemBuilder: ((context, index) {
+                            final comment = data[index];
+                            return CommentCard(comment: comment);
+                          }),
+                          itemCount: data.length,
+                        ),
+                      );
+                    },
+                    error: ((error, stackTrace) {
+                      print(error.toString());
+                      return ErrorText(error: error.toString());
+                    }),
+                    loading: (() => const Loader()))
               ],
             );
           },

@@ -152,43 +152,47 @@ class PostCard extends ConsumerWidget {
                             ),
                           ),
                         Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: [
-                            IconButton(
-                              onPressed: () => upvotePost(ref),
-                              icon: Icon(
-                                Constants.up,
-                                size: 30,
-                                color: post.upvotes.contains(user.uid)
-                                    ? Pallete.redColor
-                                    : null,
-                              ),
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () => upvotePost(ref),
+                                  icon: Icon(
+                                    Constants.up,
+                                    size: 30,
+                                    color: post.upvotes.contains(user.uid)
+                                        ? Pallete.redColor
+                                        : null,
+                                  ),
+                                ),
+                                Text(
+                                  '${post.upvotes.length - post.downvotes.length == 0 ? 'Vote' : post.upvotes.length - post.downvotes.length}',
+                                  style: const TextStyle(fontSize: 17),
+                                ),
+                                IconButton(
+                                  onPressed: () => downvotePost(ref),
+                                  icon: Icon(
+                                    Constants.down,
+                                    size: 30,
+                                    color: post.downvotes.contains(user.uid)
+                                        ? Pallete.blueColor
+                                        : null,
+                                  ),
+                                ),
+                              ],
                             ),
-                            Text(
-                              '${post.upvotes.length - post.downvotes.length == 0 ? 'Vote' : post.upvotes.length - post.downvotes.length}',
-                              style: const TextStyle(fontSize: 17),
-                            ),
-                            IconButton(
-                              onPressed: () => downvotePost(ref),
-                              icon: Icon(
-                                Constants.down,
-                                size: 30,
-                                color: post.downvotes.contains(user.uid)
-                                    ? Pallete.blueColor
-                                    : null,
-                              ),
-                            )
-                          ],
-                        ),
-                        Row(
-                          children: [
-                            IconButton(
-                              onPressed: () => navigateToComments(context),
-                              icon: const Icon(Icons.comment),
-                            ),
-                            Text(
-                              '${post.commentCount == 0 ? 'Comment' : post.commentCount}',
-                              style: const TextStyle(fontSize: 17),
+                            Row(
+                              children: [
+                                IconButton(
+                                  onPressed: () => navigateToComments(context),
+                                  icon: const Icon(Icons.comment),
+                                ),
+                                Text(
+                                  '${post.commentCount == 0 ? 'Comment' : post.commentCount}',
+                                  style: const TextStyle(fontSize: 17),
+                                ),
+                              ],
                             ),
                             ref
                                 .watch(getCommunityByNameProvider(

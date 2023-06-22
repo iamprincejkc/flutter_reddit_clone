@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:fpdart/fpdart.dart';
-import 'package:reddit_clone/core/constants/constants.dart';
 import 'package:reddit_clone/core/constants/firebase_constants.dart';
 
 import '../../../core/failure.dart';
@@ -120,11 +119,26 @@ class PostRepository {
 
   FutureVoid addComment(Comment comment) async {
     try {
-      return right(_comments.doc(comment.id).set(comment.toMap()));
+      await _comments.doc(comment.id).set(comment.toMap());
+      return right(_posts
+          .doc(comment.postId)
+          .update({'commentCount': FieldValue.increment(1)}));
     } on FirebaseException catch (e) {
       throw e.message!;
     } catch (e) {
       return left(Failure(e.toString()));
     }
+  }
+
+  Stream<List<Comment>> fetchPostComments(String postId) {
+    return _comments
+        .where('postId', isEqualTo: postId)
+        .orderBy('createdAt', descending: true)
+        .snapshots()
+        .map(
+          (event) => event.docs
+              .map((e) => Comment.fromMap(e.data() as Map<String, dynamic>))
+              .toList(),
+        );
   }
 }

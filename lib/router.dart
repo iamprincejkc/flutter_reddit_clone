@@ -1,8 +1,3 @@
-//logged out
-//logged in
-
-import 'dart:html';
-
 import 'package:flutter/material.dart';
 import 'package:reddit_clone/features/auth/community/screens/add_mods_screen.dart';
 import 'package:reddit_clone/features/auth/community/screens/community_screen.dart';
