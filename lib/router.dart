@@ -6,6 +6,7 @@ import 'package:reddit_clone/features/auth/community/screens/edit_community_scre
 import 'package:reddit_clone/features/auth/community/screens/mod_tools_screen.dart';
 import 'package:reddit_clone/features/auth/home/screens/home_screen.dart';
 import 'package:reddit_clone/features/auth/screens/login_screen.dart';
+import 'package:reddit_clone/features/posts/screens/add_post_screen.dart';
 import 'package:reddit_clone/features/posts/screens/add_post_type_screen.dart';
 import 'package:reddit_clone/features/posts/screens/comment_screen.dart';
 import 'package:reddit_clone/features/user_profile/screens/edit_profile_screen.dart';
@@ -59,5 +60,8 @@ final loggedInRoute = RouteMap(routes: {
         child: CommentScreen(
           postId: Uri.decodeComponent(route.pathParameters['postId']!),
         ),
+      ),
+  '/add-post': (route) => const MaterialPage(
+        child: AddPostScreen(),
       ),
 });

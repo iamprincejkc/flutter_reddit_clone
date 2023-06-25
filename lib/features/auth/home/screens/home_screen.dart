@@ -1,4 +1,5 @@
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/core/constants/constants.dart';
@@ -7,6 +8,7 @@ import 'package:reddit_clone/features/auth/home/screens/drawers/community_list_d
 import 'package:reddit_clone/features/auth/home/screens/drawers/profile_drawer.dart';
 import 'package:reddit_clone/features/auth/repository/auth_repository.dart';
 import 'package:reddit_clone/theme/pallete.dart';
+import 'package:routemaster/routemaster.dart';
 import '../../controller/auth_controller.dart';
 
 class HomeScreen extends ConsumerStatefulWidget {
@@ -36,6 +38,7 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final user = ref.watch(userProvider)!;
+    final isGuest = !user.isAuthenticated;
     final currentTheme = ref.watch(themeNotifierProvider);
 
     return Scaffold(
@@ -56,6 +59,12 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
             },
             icon: const Icon(Icons.search),
           ),
+          IconButton(
+            onPressed: (() {
+              Routemaster.of(context).push('/add-post');
+            }),
+            icon: const Icon(Icons.add),
+          ),
           Builder(builder: (context) {
             return IconButton(
               icon: CircleAvatar(
@@ -67,24 +76,26 @@ class _HomeScreenState extends ConsumerState<HomeScreen> {
         ],
       ),
       drawer: const CommunityListDrawer(),
-      endDrawer: const ProfileDrawer(),
+      endDrawer: isGuest ? null : const ProfileDrawer(),
       body: Constants.tabWidgets[_page],
-      bottomNavigationBar: CupertinoTabBar(
-        activeColor: currentTheme.iconTheme.color,
-        backgroundColor: currentTheme.backgroundColor,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: '',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.add),
-            label: '',
-          ),
-        ],
-        onTap: onPageChanged,
-        currentIndex: _page,
-      ),
+      bottomNavigationBar: isGuest || kIsWeb
+          ? null
+          : CupertinoTabBar(
+              activeColor: currentTheme.iconTheme.color,
+              backgroundColor: currentTheme.backgroundColor,
+              items: const [
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.home),
+                  label: '',
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.add),
+                  label: '',
+                ),
+              ],
+              onTap: onPageChanged,
+              currentIndex: _page,
+            ),
     );
   }
 }

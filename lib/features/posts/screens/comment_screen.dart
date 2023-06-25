@@ -3,10 +3,12 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/core/common/post_card.dart';
 import 'package:reddit_clone/features/posts/controller/post_controller.dart';
 import 'package:reddit_clone/features/posts/widgets/comment_card.dart';
+import 'package:reddit_clone/responsive/responsive.dart';
 
 import '../../../core/common/error_text.dart';
 import '../../../core/common/loader.dart';
 import '../../../models/post_mode.dart';
+import '../../auth/repository/auth_repository.dart';
 
 class CommentScreen extends ConsumerStatefulWidget {
   final String postId;
@@ -35,6 +37,8 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final user = ref.watch(userProvider)!;
+    final isGuest = !user.isAuthenticated;
     return Scaffold(
       appBar: AppBar(),
       body: ref.watch(getPostByIdProvider(widget.postId)).when(
@@ -45,15 +49,18 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                   post: data,
                 ),
                 const SizedBox(height: 10),
-                TextField(
-                  onSubmitted: ((value) => addComment(data)),
-                  controller: commentController,
-                  decoration: const InputDecoration(
-                    hintText: 'Comment',
-                    filled: true,
-                    border: InputBorder.none,
+                if (!isGuest)
+                  Responsive(
+                    child: TextField(
+                      onSubmitted: ((value) => addComment(data)),
+                      controller: commentController,
+                      decoration: const InputDecoration(
+                        hintText: 'Comment',
+                        filled: true,
+                        border: InputBorder.none,
+                      ),
+                    ),
                   ),
-                ),
                 ref.watch(getPostCommentsProvider(widget.postId)).when(
                     data: (data) {
                       return Expanded(
@@ -67,7 +74,6 @@ class _CommentScreenState extends ConsumerState<CommentScreen> {
                       );
                     },
                     error: ((error, stackTrace) {
-                      print(error.toString());
                       return ErrorText(error: error.toString());
                     }),
                     loading: (() => const Loader()))

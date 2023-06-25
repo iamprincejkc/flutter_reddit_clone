@@ -12,20 +12,42 @@ class FeedScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    return ref.watch(userCommunitiesProvider).when(
-        data: (communities) => ref.watch(userPostProvider(communities)).when(
-            data: (data) {
-              return ListView.builder(
-                itemBuilder: ((context, index) {
-                  final post = data[index];
-                  return PostCard(post: post);
-                }),
-                itemCount: data.length,
-              );
-            },
+    final user = ref.watch(userProvider)!;
+    final isGuest = !user.isAuthenticated;
+    return !isGuest
+        ? ref.watch(userCommunitiesProvider).when(
+            data: (communities) => ref
+                .watch(userPostProvider(communities))
+                .when(
+                    data: (data) {
+                      return ListView.builder(
+                        itemBuilder: ((context, index) {
+                          final post = data[index];
+                          return PostCard(post: post);
+                        }),
+                        itemCount: data.length,
+                      );
+                    },
+                    error: ((error, stackTrace) =>
+                        ErrorText(error: error.toString())),
+                    loading: () => const Loader()),
             error: ((error, stackTrace) => ErrorText(error: error.toString())),
-            loading: () => const Loader()),
-        error: ((error, stackTrace) => ErrorText(error: error.toString())),
-        loading: () => const Loader());
+            loading: () => const Loader())
+        : ref.watch(userCommunitiesProvider).when(
+            data: (communities) => ref.watch(guestPostProvider).when(
+                data: (data) {
+                  return ListView.builder(
+                    itemBuilder: ((context, index) {
+                      final post = data[index];
+                      return PostCard(post: post);
+                    }),
+                    itemCount: data.length,
+                  );
+                },
+                error: ((error, stackTrace) =>
+                    ErrorText(error: error.toString())),
+                loading: () => const Loader()),
+            error: ((error, stackTrace) => ErrorText(error: error.toString())),
+            loading: () => const Loader());
   }
 }

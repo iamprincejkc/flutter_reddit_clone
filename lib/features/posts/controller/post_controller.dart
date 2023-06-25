@@ -1,9 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:reddit_clone/core/enums/enums.dart';
-import 'package:reddit_clone/core/type_defs.dart';
 import 'package:reddit_clone/core/utils.dart';
 import 'package:reddit_clone/features/auth/repository/auth_repository.dart';
 import 'package:reddit_clone/features/user_profile/controller/user_profile_controller.dart';
@@ -31,6 +30,11 @@ final userPostProvider =
     StreamProvider.family((ref, List<Community> communities) {
   final postController = ref.watch(postControllerProvider.notifier);
   return postController.fetchUserPosts(communities);
+});
+
+final guestPostProvider = StreamProvider((ref) {
+  final postController = ref.watch(postControllerProvider.notifier);
+  return postController.fetchGuestPosts();
 });
 
 final getPostByIdProvider = StreamProvider.family((ref, String postId) {
@@ -131,15 +135,16 @@ class PostController extends StateNotifier<bool> {
     required String title,
     required Community selectedCommunity,
     required File? file,
+    required Uint8List? webFile,
   }) async {
     state = true;
     String postId = const Uuid().v1();
     final user = _ref.read(userProvider)!;
     final imageRes = await _storageRepository.storeFile(
-      path: 'post/${selectedCommunity.name}',
-      uid: postId,
-      file: file,
-    );
+        path: 'post/${selectedCommunity.name}',
+        uid: postId,
+        file: file,
+        webFile: webFile);
     imageRes.fold((l) => l.message, (r) async {
       final Post post = Post(
         id: postId,
@@ -175,6 +180,10 @@ class PostController extends StateNotifier<bool> {
     } else {
       return Stream.value([]);
     }
+  }
+
+  Stream<List<Post>> fetchGuestPosts() {
+    return _postRepository.fetchGuestPosts();
   }
 
   void deletePost(Post post, BuildContext context) async {
